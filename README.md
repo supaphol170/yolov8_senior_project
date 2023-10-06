@@ -7,24 +7,13 @@ Install & Set Up Environment :
   - Activate venv from this command : codna activate --name
   - Install yolov8 but yolov8 is from Ultralytics using this command for install : pip install ultralytics
   - Create SubFolder like this :
-    $ tree
-.
-├── dir1
-│   ├── file11.ext
-│   └── file12.ext
-├── dir2
-│   ├── file21.ext
-│   ├── file22.ext
-│   └── file23.ext
-├── dir3
-├── file_in_root.ext
     --name
-      |__train
-         |__images
-         |__labels
-      |__val
-         |__images
-         |__labels
+      __train
+         __images
+         __labels
+      __val
+         __images
+         __labels
     Folder train is use for train model and val is use for valid as you train
   - If you want custom your own model you have to downlload pictures as you want and save it in SubFolder images in Subfolder train or download by using code python by using simple_image_download you can install by follow step this official website : https://pypi.org/project/simple-image-download/
   ![Untitled](https://github.com/supaphol170/yolov8_senior_project/assets/124768326/f03cdbf8-6ed1-4d0b-88bf-511c2bba4348)
