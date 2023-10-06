@@ -7,20 +7,17 @@ Install & Set Up Environment :
   - Activate venv from this command : codna activate --name
   - Install yolov8 but yolov8 is from Ultralytics using this command for install : pip install ultralytics
   - Create SubFolder like this :
-    $ ./tree-md .
-# Project yolov8
+    $ tree
 .
- * [tree-md](./tree-md)
- * [dir2](./dir2)
-   * [file21.ext](./dir2/file21.ext)
-   * [file22.ext](./dir2/file22.ext)
-   * [file23.ext](./dir2/file23.ext)
- * [dir1](./dir1)
-   * [file11.ext](./dir1/file11.ext)
-   * [file12.ext](./dir1/file12.ext)
- * [file_in_root.ext](./file_in_root.ext)
- * [README.md](./README.md)
- * [dir3](./dir3)
+├── dir1
+│   ├── file11.ext
+│   └── file12.ext
+├── dir2
+│   ├── file21.ext
+│   ├── file22.ext
+│   └── file23.ext
+├── dir3
+├── file_in_root.ext
     --name
       |__train
          |__images
