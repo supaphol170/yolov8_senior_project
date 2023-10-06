@@ -5,7 +5,7 @@ Install & Set Up Environment :
   - Download anaconda miniconda3 from this link https://www.anaconda.com/download
   - Create virtual environment(venv) using miniconda3 by this command : ``` conda create --name env_name python=3.7 (--name is depend on name what you want) ```
   - Activate venv from this command : ``` codna activate --name ```
-  - Install yolov8 but yolov8 is from Ultralytics using this command for install : ``` pip install ultralytics ```
+  - Install yolov8 but yolov8 is from Ultralytics so you have to using this command for install : ``` pip install ultralytics ```
   - Create SubFolder like this :
     ```bash
     --name
