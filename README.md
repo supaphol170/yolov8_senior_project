@@ -24,6 +24,7 @@ Install & Set Up Environment :
   - Choose file icon and scroll down until you see open dir(for you image as you download and want to use train) after you choose you have too click File icon again and scroll down until you see save dir(you choose path val/images for save image after you crop and classified)
   - When you crop and classified finished you have to create file name.yaml(name is depend on you) for use in data when you train model
   - You have to see Folder you look like this
+    ```bash
     --name
       |__train
          |__images
@@ -32,7 +33,9 @@ Install & Set Up Environment :
          |__images
          |__labels
       name.yaml
+    ```
   - Creating file for train train.py after create, you have to see Folder you look like this
+    ```bash
     --name
       |__train
          |__images
@@ -42,3 +45,4 @@ Install & Set Up Environment :
          |__labels
       name.yaml
       train.py
+    ```
