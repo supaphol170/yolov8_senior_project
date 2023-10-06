@@ -46,3 +46,4 @@ Install & Set Up Environment :
       name.yaml
       train.py
     ```
+  - Loading a pretrained model from official website : https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8x.pt is use for train model with ``` your own custom dataset ``` and ``` name.yaml ```
