@@ -1,0 +1,7 @@
+#locate
+train: ./train
+val: ./val
+#number of class
+number_classes: 1
+#name in class
+names: ["person"]
