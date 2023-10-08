@@ -19,6 +19,8 @@ Install & Set Up Environment :
     Folder train is use for train model and val is use for valid as you train
   - If you want custom your own model you have to download pictures as you want and save it in SubFolder images in Subfolder train or download by using code python by using simple_image_download you can install by follow step this official website : https://pypi.org/project/simple-image-download/
   ![Untitled](https://github.com/supaphol170/yolov8_senior_project/assets/124768326/f03cdbf8-6ed1-4d0b-88bf-511c2bba4348)
+  - If you use libraries ``` simple_image_download ``` for download pictures as you want from your own keywords when downloads finished, It'll show look like this on your terminal
+    ![terminal](https://github.com/supaphol170/yolov8_senior_project/assets/124768326/56b8f568-4432-4513-9f20-311f65b96af0)
   - Install labelImg for crop image and classified and use to train model you own dataset by using this command : ``` pip install labelImg ```
   - Open labelImg on miniconda3 terminal by this command : ``` labelImg ```
   - Choose file icon and scroll down until you see open dir(for you image as you download and want to use train) after you choose you have to click File icon again and scroll down until you see save dir(you choose path val/images for save image after you crop and classified)
