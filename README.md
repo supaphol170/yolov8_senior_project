@@ -47,3 +47,6 @@ Install & Set Up Environment :
       train.py
     ```
   - Loading a pretrained model from official website : https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8x.pt is use for train model with ``` your own custom dataset ``` and ``` name.yaml ```
+  - After you crop and done everything next step is train model but recommend use picture file JPEG, JPG to train because when you use another your model is reduce accuracy 20% and It's show on your terminal when your dataset have a png is show look like this :
+  ![terminal1](https://github.com/supaphol170/yolov8_senior_project/assets/124768326/2d09f069-fdfd-4760-8cf0-979112bea672)
+
