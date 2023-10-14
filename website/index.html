@@ -1,14 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Video Upload and Display</title>
 </head>
 <body>
-    <<h1>Script Output</h1>
-    <div class="box" id="color-box"></div>
-    <p id="message"></p>
-    <script src="script.js"></script>
+    <h1>Upload a Video</h1>
+    <input type="file" accept="video/*" id="videoInput" onchange="playVideo()">
+    <br>
+    <video id="videoPlayer" controls></video>
+
+    <script>
+        function playVideo() {
+            const videoInput = document.getElementById('videoInput');
+            const videoPlayer = document.getElementById('videoPlayer');
+            
+            const file = videoInput.files[0];
+            const objectURL = URL.createObjectURL(file);
+
+            videoPlayer.src = objectURL;
+            videoPlayer.style.display = 'block';
+        }
+    </script>
 </body>
 </html>
