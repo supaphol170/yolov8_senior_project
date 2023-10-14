@@ -1,24 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Video Upload and Display</title>
+    <title>Video Processing</title>
 </head>
 <body>
     <h1>Upload a Video</h1>
-    <input type="file" accept="video/*" id="videoInput" onchange="playVideo()">
-    <br>
-    <video id="videoPlayer" controls></video>
+    <input type="file" accept="video/*" id="videoInput">
+    <button onclick="processVideo()">Process Video</button>
+    
+    <h2>Uploaded Video:</h2>
+    <video id="uploadedVideo" controls></video>
+
+    <h2>Output:</h2>
+    <pre id="output" style="float: right;"></pre>
 
     <script>
-        function playVideo() {
+        async function processVideo() {
             const videoInput = document.getElementById('videoInput');
-            const videoPlayer = document.getElementById('videoPlayer');
-            
-            const file = videoInput.files[0];
-            const objectURL = URL.createObjectURL(file);
+            const uploadedVideo = document.getElementById('uploadedVideo');
+            const output = document.getElementById('output');
 
-            videoPlayer.src = objectURL;
-            videoPlayer.style.display = 'block';
+            const file = videoInput.files[0];
+            if (!file) {
+                return;
+            }
+
+            // Display the uploaded video
+            uploadedVideo.src = URL.createObjectURL(file);
+            uploadedVideo.style.display = 'block';
+
+            // Send the video file to the server for processing
+            const formData = new FormData();
+            formData.append('video', file);
+
+            try {
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const data = await response.text();
+                    output.innerText = data;
+                } else {
+                    output.innerText = 'Error processing video.';
+                }
+            } catch (error) {
+                output.innerText = 'An error occurred: ' + error;
+            }
         }
     </script>
 </body>
