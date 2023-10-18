@@ -16,7 +16,7 @@ Install & Set Up Environment :
          |__images
          |__labels
     ```
-    Folder train is use for train model and val is use for valid as you train
+    Folder train is use for train model and folder val is use for valid as you train
   - If you want custom your own model you have to download pictures as you want and save it in SubFolder images in Subfolder train or download by using code python by using simple_image_download you can install by follow step this official website : https://pypi.org/project/simple-image-download/
   ![Untitled](https://github.com/supaphol170/yolov8_senior_project/assets/124768326/f03cdbf8-6ed1-4d0b-88bf-511c2bba4348)
   - Install labelImg for crop image and classified and use to train model you own dataset by using this command : ``` pip install labelImg ```
