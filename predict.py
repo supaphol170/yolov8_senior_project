@@ -55,6 +55,7 @@ def check_type_input(file):
 
 #main function
 def main(file):
+    form = cgi.FieldStorage()
     if "file" in form:
         fileitem = form["file"]
         if fileitem.file:
