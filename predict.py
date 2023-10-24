@@ -58,7 +58,7 @@ def main(file):
     if "file" in form:
         fileitem = form["file"]
         if fileitem.file:
-            types = check_type_input(file)
+            types = check_type_input(fileitem)
             execute(types, file)
             print("File uploaded and processed successfully!")
         else:
