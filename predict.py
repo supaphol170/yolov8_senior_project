@@ -2,6 +2,7 @@ from ultralytics import YOLO
 import cv2 #Using for show output on fram as create
 import imghdr #Using for indentify type of input it's images or not
 import magic #Using for indentify type of input it's video or not
+import cgi
 
 #This file use to detect input
 def execute(types, file):
@@ -53,6 +54,14 @@ def check_type_input(file):
         return 'stream'   
 
 #main function
-def main(file): 
-    types = check_type_input(file)
-    execute(types, file)
+def main(file):
+    if "file" in form:
+        fileitem = form["file"]
+        if fileitem.file:
+            types = check_type_input(file)
+            execute(types, file)
+            print("File uploaded and processed successfully!")
+        else:
+            print("No file Uploaded.")
+    else:
+        print("No file Uploaded.")
