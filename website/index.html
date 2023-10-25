@@ -1,54 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Video Processing</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detection Human</title>
 </head>
 <body>
-    <h1>Upload a Video</h1>
-    <input type="file" accept="video/*" id="videoInput">
-    <button onclick="processVideo()">Process Video</button>
-    
-    <h2>Uploaded Video:</h2>
-    <video id="uploadedVideo" controls></video>
-
-    <h2>Output:</h2>
-    <pre id="output" style="float: right;"></pre>
-
-    <script>
-        async function processVideo() {
-            const videoInput = document.getElementById('videoInput');
-            const uploadedVideo = document.getElementById('uploadedVideo');
-            const output = document.getElementById('output');
-
-            const file = videoInput.files[0];
-            if (!file) {
-                return;
-            }
-
-            // Display the uploaded video
-            uploadedVideo.src = URL.createObjectURL(file);
-            uploadedVideo.style.display = 'block';
-
-            // Send the video file to the server for processing
-            const formData = new FormData();
-            formData.append('video', file);
-
-            try {
-                const response = await fetch('/process', {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                if (response.ok) {
-                    const data = await response.text();
-                    output.innerText = data;
-                } else {
-                    output.innerText = 'Error processing video.';
-                }
-            } catch (error) {
-                output.innerText = 'An error occurred: ' + error;
-            }
-        }
-    </script>
+    <h1>Upload an Image for Object Detection</h1>
+    <form action="{{ url_for('detect') }}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file"/>
+        <input type="submit" value="Upload and Detect"/>
+    </form>
 </body>
 </html>
