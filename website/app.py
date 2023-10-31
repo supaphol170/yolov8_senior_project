@@ -15,7 +15,7 @@ ALLOWED_EXTENSIONS = {'mp4', 'pdf', 'png', 'jpg', 'jpeg', 'gif'} #for protect th
 def detect():
     if request.method == "POST":
         uploaded_file = request.files["file"]
-        type_input = uploaded_file.mimetype.split('/')[1]
+        type_input = uploaded_file.mimetype.split('/')[1] # for know what type of input from user "video.mp4" this value show mp4
         if uploaded_file and type_input == 'jpeg':
             # Read the uploaded image
             image = cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8), cv2.IMREAD_COLOR)
@@ -46,6 +46,7 @@ def detect():
 def display_video(filename):
     return redirect(url_for('static', filename='runs/' + filename), code=301)
 
+#main page when open web is render this main
 @app.route('/')
 def index():
     return render_template('index.html')
