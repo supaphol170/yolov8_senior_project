@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 
 app=Flask(__name__)
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'runs')
-app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024 # for limit size input on server not over than 64 Mb
 model = YOLO("best.pt") # Model as train own dataset for predict
 ALLOWED_EXTENSIONS = {'mp4', 'pdf', 'png', 'jpg', 'jpeg', 'gif'} #for protect that user insert input on website 
 
