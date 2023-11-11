@@ -1,58 +1,73 @@
-from flask import Flask, render_template, request, Response, redirect, url_for
-from ultralytics import YOLO
+from flask import Flask, render_template, Response, jsonify
 import cv2
+from ultralytics import YOLO
 import numpy as np
-import os
-from werkzeug.utils import secure_filename
+import math
 
-app=Flask(__name__)
-app.config['UPLOAD_FOLDER'] = os.path.join('static', 'runs')
-app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024 # for limit size input on server not over than 64 Mb
-model = YOLO("best.pt") # Model as train own dataset for predict
-ALLOWED_EXTENSIONS = {'mp4', 'pdf', 'png', 'jpg', 'jpeg', 'gif'} #for protect that user insert input on website 
 
-@app.route('/detect', methods=["POST"])
-def detect():
-    if request.method == "POST":
-        uploaded_file = request.files["file"]
-        type_input = uploaded_file.mimetype.split('/')[1] # for know what type of input from user "video.mp4" this value show mp4
-        if uploaded_file and type_input == 'jpeg':
-            # Read the uploaded image
-            image = cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8), cv2.IMREAD_COLOR)
-            # Perform object detection
-            results = model.predict(image, save_txt=True, save=True, project="C:\\Users\\Babe\\Downloads\\senior project\\environment\\test\\static\\runs")
-            #access attributes line 18
-            for image_path in results:
-                path_images = image_path.save_dir.split("\\")[9] # For split path by \\ to list and go to index 9 for use word "predict1-.."
-                in_pathimages = image_path.path #for query name image as save in this case is name "image0.jpg"
-                keep_path = app.config['UPLOAD_FOLDER']+"\\"+path_images #for combine variable path_images with \ and app.config['UPLOAD_FOLDER'] to full path image save
-                final_find = os.path.join(keep_path, in_pathimages) #for open keep_path to open image on web
-                return render_template('show.html', images=final_find) # show find html name show with image
-        elif uploaded_file and type_input == 'mp4':
-            filename = secure_filename(uploaded_file.filename) #for save input video ti this variable and make sure not another type input from user
-            uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))  #for save input in lines 31 to path
-            # Perform object detection
-            results = model.predict(filename, save_txt=True, save=True, project="C:\\Users\\Babe\\Downloads\\senior project\\environment\\test\\static\\runs")
-            #access attributes line 35
-            for video_path in results:
-                path_vieo = video_path.save_dir.split("\\")[9] # For split path by \\ to list and go to index 9 for use word "predict1-.."
-                in_pathvideo = video_path.path #for query name image as save in this case is name "image0.jpg"
-                keep_path = app.config['UPLOAD_FOLDER']+"\\"+path_vieo #for combine variable path_images with \ and app.config['UPLOAD_FOLDER'] to full path image save
-                final_find = os.path.join(keep_path, in_pathvideo) #for open keep_path to open image on web
-                display_video(results)
-                return render_template('show.html', filename=results)
+app = Flask(__name__)
+model = YOLO("best.pt")
+# Create a variable to store the current color
+color = "black"
+
+
+def class_detected_to_color(alls):
+    for data in alls:
+        if data:
+            return "red"
+        else:
+            return "Black"
         
-@app.route('/display/<filename>')
-def display_video(filename):
-    return redirect(url_for('static', filename='runs/' + filename), code=301)
+def video_detection():
+    video_capture = 0
+    #Create a Webcam Object
+    cap=cv2.VideoCapture(video_capture)
+    classNames = ["person"]
+    while True:
+        _, image_input = cap.read()
+        results=model(image_input,stream=True)
+        for r in results:
+            boxes=r.boxes
+            for box in boxes:
+                x1,y1,x2,y2=box.xyxy[0] #use to see value in xyxy when u detect
+                x1,y1,x2,y2=int(x1), int(y1), int(x2), int(y2)
+                cv2.rectangle(image_input, (x1,y1), (x2,y2), (255,0,255),3) #create box when detect somehing 
+                conf=math.ceil((box.conf[0]*100))/100 # for know confidence as predict from model and change from several decimal places to two.
+                clses=int(box.cls[0])
+                class_name=classNames[clses]
+                label=f'{class_name}{conf}' #concatinate between class as Detected and Confidence
+                textsize = cv2.getTextSize(label, 0, fontScale=1, thickness=2)[0]#create word from classNames when detected 
+                c2 = x1 + textsize[0], y1 - textsize[1] - 3
+                cv2.rectangle(image_input, (x1,y1), c2, [255,0,255], -1, cv2.LINE_AA)  # filled
+                cv2.putText(image_input, label, (x1,y1-2),0, 1,[255,255,255], thickness=1,lineType=cv2.LINE_AA)
+            yield image_input, boxes # Yield like function return in python annd image_input is used for stream frames and boxes is use for kno what kind of detect
+cv2.destroyAllWindows()
 
-#main page when open web is render this main
+@app.route('/get_color')
+def get_color(): # Using for change color when detect is human in int.html
+    global color #setting value global for across different routes
+    return jsonify({'color': color}) #Converting python file to .json file to htmml can read
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    global color
+    return render_template('int.html', color=color)
 
-def video():
-    return Response(detect(),mimetype='multipart/x-mixed-replace; boundary=frame')
+#like main or call other function 
+def gen():
+    yolo_output = video_detection()
+    for detection_, alls in yolo_output:#show how detect and show like numpy.ndarray
+        _,buffer=cv2.imencode('.jpg',detection_)
+        global color
+        color = class_detected_to_color(alls)
+        # Send the video frame to the client
+        frame=buffer.tobytes()
+        yield (b'--frame\r\n'
+                    b'Content-Type: image/jpeg\r\n\r\n' + frame +b'\r\n')
 
-if __name__=="__main__":
-    app.run(port=5500, debug=True)
+@app.route('/video_feed')
+def video_feed():
+    return Response(gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+if __name__ == '__main__':
+    app.run(host='127.0.0.1', debug=True,port="5000")
