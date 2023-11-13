@@ -10,42 +10,133 @@
     <title>Video Stream</title>
     <style>
         .all{
-            background: linear-gradient(129deg, #e0fce6 0%, #d8fdff 50%, #e7e0ff 100%);
+            background-color: #143362;
+            font-family : serif;
+            color: #fcfdfe;
         }
         #boxs{
-            width: 90%; 
-            height: 90%; 
+            width: 85%; 
+            height: 85%; 
             background-color: var(--color); 
             padding: 10px;
+            border-radius: 12px;
         }
         .color{
             background-color: black;
             color: #FFF;
             height: 70%;
         }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+    
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #7ED957;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }   
+    
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: #ffffff;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: #9d9393;
+        }
+    
+        input:focus + .slider {
+            box-shadow: 0 0 1px #fcfdfe;
+        }
+    
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+    
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
+    
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        .center{
+            text-align: center;
+        }
+
+        .borders{
+            border-radius: 12px;
+        }
+        .left{
+            margin-left: 10%;
+        }
     </style>
 </head>
 <body class="all">
     <div class="container-fluid">
-        <div class="container-fluid color">
-            <h1 class="text-center"><span class="badge badge-pill badge-info">Light Room</span></h1>
+        <div class="container-fluid p-5 text-white text-Left">
+            <div class="row">
+               <div class="col-lg-3">
+                <p class="center" style="line-height: 2px;">Website of</p>
+                <h1 class="center" style="line-height: 40px;">Light Room</h1>
+            </div>
+    
+            <div class="col-lg-6"></div> 
+    
+            <div class="col-lg-3 p-3 rights">
+                <label class="switch">
+                    <!--เป็นปุ่มสำหรับคำสั่ง-->
+                    <input type="checkbox" checked>
+                    <span class="slider round" style="line-height: 50px;"></span>
+                </label>
+            </div>
+            </div>
+            <hr style="height: 3px; border: width 0; background-color:white"> <!-- creating line for know seperate between header and content-->
         </div>
-        <div class="container-fluid row">
+        <div class="row left">
             <div class="col-sm-6">
                 <section>
-                    <img src="{{ url_for('video_feed') }}" />
+                    <img class="borders" src="{{ url_for('video_feed') }}" />
                 </section>
-                <h3>Real-Time Detection</h3>
-                <h1>{{numberclass}}</h1>
+                <h3 class="center">Real-Time Detection</h3>
+                <h1 id="count_person" class="center">{{count_person}}</h1>
             </div>
             <div class="col-sm-6">
                 <div id="boxs" style="--color: {{ color }}"></div>
-                <h3>Output</h3>
+                <h3 class="center">Output</h3>
             </div>
         </div>
     </div>
 </body>
 <script>
+    //fetch API
     function updateBoxColor() {
         // Perform a GET request to fetch the current color
         fetch('/get_color')
@@ -53,9 +144,9 @@
             .then(data => {
                 // Update the background color of the #boxs div
                 document.getElementById('boxs').style.backgroundColor = data.color;
+                document.getElementById('count_person').innerHTML = data.count_person;
             });
     }
-
     // Call the updateBoxColor function every 1000 milliseconds (1 second)
     setInterval(updateBoxColor, 1000);
 </script>
