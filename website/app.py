@@ -9,14 +9,14 @@ app = Flask(__name__)
 model = YOLO("best.pt")
 # Create a variable to store the current color
 color = "black"
-
+#Create a variable to store how many people as detected
+count_person = "0"
 
 def class_detected_to_color(alls):
-    for data in alls:
-        if data:
-            return "red"
-        else:
-            return "Black"
+    if int(alls) == 0:
+        return "black"
+    elif int(alls) >=1 :
+        return "red"
         
 def video_detection():
     video_capture = 0
@@ -40,13 +40,14 @@ def video_detection():
                 c2 = x1 + textsize[0], y1 - textsize[1] - 3
                 cv2.rectangle(image_input, (x1,y1), c2, [255,0,255], -1, cv2.LINE_AA)  # filled
                 cv2.putText(image_input, label, (x1,y1-2),0, 1,[255,255,255], thickness=1,lineType=cv2.LINE_AA)
-            yield image_input, boxes # Yield like function return in python annd image_input is used for stream frames and boxes is use for kno what kind of detect
+            yield image_input, boxes.shape[0] # Yield like function return in python annd image_input is used for stream frames and boxes is use for kno what kind of detect
 cv2.destroyAllWindows()
 
 @app.route('/get_color')
 def get_color(): # Using for change color when detect is human in int.html
     global color #setting value global for across different routes
-    return jsonify({'color': color}) #Converting python file to .json file to htmml can read
+    global count_person
+    return jsonify({'color': color, 'count_person': count_person}) #Converting python file to .json file to htmml can read
 
 @app.route('/')
 def index():
@@ -56,10 +57,15 @@ def index():
 #like main or call other function 
 def gen():
     yolo_output = video_detection()
-    for detection_, alls in yolo_output:#show how detect and show like numpy.ndarray
+    for detection_, count in yolo_output:#show how detect and show like numpy.ndarray
         _,buffer=cv2.imencode('.jpg',detection_)
+        #for change color on page when detect
         global color
-        color = class_detected_to_color(alls)
+        color = class_detected_to_color(count)
+        #for count how many detected are there
+        global count_person
+        count_person = "Person : " + str(count)
+        print(count_person)
         # Send the video frame to the client
         frame=buffer.tobytes()
         yield (b'--frame\r\n'
