@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <title>Video Stream</title>
+    <style>
+        .all{
+            background-color: #143362;
+            font-family : serif;
+            color: #fcfdfe;
+        }
+        #boxs{
+            width: 85%; 
+            height: 85%; 
+            background-color: var(--color); 
+            padding: 10px;
+            border-radius: 12px;
+        }
+        .color{
+            background-color: black;
+            color: #FFF;
+            height: 70%;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+    
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #7ED957;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }   
+    
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: #ffffff;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: #9d9393;
+        }
+    
+        input:focus + .slider {
+            box-shadow: 0 0 1px #fcfdfe;
+        }
+    
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+    
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
+    
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        .center{
+            text-align: center;
+        }
+
+        .borders{
+            border-radius: 12px;
+        }
+        .left{
+            margin-left: 10%;
+        }
+    </style>
+</head>
+<body class="all">
+    <div class="container-fluid">
+        <div class="container-fluid p-5 text-white text-Left">
+            <div class="row">
+               <div class="col-lg-3">
+                <p class="center" style="line-height: 2px;">Website of</p>
+                <h1 class="center" style="line-height: 40px;">Light Room</h1>
+            </div>
+    
+            <div class="col-lg-6"></div> 
+    
+            <div class="col-lg-3 p-3 rights">
+                <label class="switch">
+                    <!--เป็นปุ่มสำหรับคำสั่ง-->
+                    <input type="checkbox" checked>
+                    <span class="slider round" style="line-height: 50px;"></span>
+                </label>
+            </div>
+            </div>
+            <hr style="height: 3px; border: width 0; background-color:white"> <!-- creating line for know seperate between header and content-->
+        </div>
+        <div class="row left">
+            <div class="col-sm-6">
+                <section>
+                    <img src="">
+                </section>
+                <h3 class="center">Real-Time Detection</h3>
+                <h1 id="count_person" class="center">{{count_person}}</h1>
+            </div>
+            <div class="col-sm-6">
+                <div id="boxs" style="--color: {{ color }}"></div>
+                <h3 class="center">Output</h3>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const img = document.querySelector('img');
+    const WS_URL = 'ws:///192.168.34.157:8888';
+    const ws = new WebSocket(WS_URL);
+    let urlObject;
+    ws.onopen = () => console.log(`Connected to ${WS_URL}`);
+    ws.onmessage = message => {
+        const arrayBuffer = message.data;
+        if(urlObject){
+            URL.revokeObjectURL(urlObject);
+        }
+        urlObject = URL.createObjectURL(new Blob([arrayBuffer]));
+        img.src = urlObject;
+    }
+</script>
+</html>
