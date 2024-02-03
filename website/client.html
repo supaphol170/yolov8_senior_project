@@ -78,6 +78,10 @@
             transform: translateX(26px);
         }
     
+        .content {
+            display: none;
+        }
+
         /* Rounded sliders */
         .slider.round {
             border-radius: 34px;
@@ -97,10 +101,14 @@
         .left{
             margin-left: 10%;
         }
+        .text{
+            color: black;
+        }
     </style>
 </head>
 <body class="all">
     <div class="container-fluid">
+        <!--for show header on web-->
         <div class="container-fluid p-5 text-white text-Left">
             <div class="row">
                <div class="col-lg-3">
@@ -113,31 +121,91 @@
             <div class="col-lg-3 p-3 rights">
                 <label class="switch">
                     <!--เป็นปุ่มสำหรับคำสั่ง-->
-                    <input type="checkbox" checked>
+                    <input type="checkbox" id="toggleSwitch" checked>
                     <span class="slider round" style="line-height: 50px;"></span>
                 </label>
             </div>
             </div>
             <hr style="height: 3px; border: width 0; background-color:white"> <!-- creating line for know seperate between header and content-->
         </div>
-        <div class="row left">
-            <div class="col-sm-6">
-                <section>
-                    <img src="">
-                </section>
-                <h3 class="center">Real-Time Detection</h3>
-                <h1 id="count_person" class="center">{{count_person}}</h1>
-            </div>
-            <div class="col-sm-6">
-                <div id="boxs" style="--color: {{ color }}"></div>
-                <h3 class="center">Output</h3>
+
+        <!--for show realtime streaming-->
+        <div class="container-fluid" id="content1">
+            <div class="row left">
+                <!--for show streaming video by Node.JS change content-->
+                <div class="col-sm">
+                    <section>
+                        <img src="">
+                    </section>
+                    <h3 class="center">Real-Time Detection</h3>
+                    <h1 id="count_person" class="center">{{count_person}}</h1> <!--show many people as detected-->
+                </div>
+                <div class="col-sm">
+                    <div id="boxs" style="--color: {{ color }}"></div><!--example for show when detect it's change color-->
+                    <h3 class="center">Output</h3>
+                </div>
             </div>
         </div>
+        <!--end-->
+
+        <!--content for manual-->
+        <div class="container-fluid">
+            <div class="row">
+                <div id="content2" style="display: none;" class="col-sm">
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top" src="lamp2.jpg" alt="Card image cap">
+                        <div class="card-body">
+                            <h5 class="card-title text">LAMP 1</h5>
+                            <button onclick="showButton('sleep')">Sleep</button>
+                            <button onclick="showButton('read')">Read</button>
+                            <button onclick="showButton('another')">Another</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="content3" style="display: none;" class="col-sm">
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top" src="lamp2.jpg" alt="Card image cap">
+                        <div class="card-body">
+                            <h5 class="card-title text">LAMP 2</h5>
+                            <button onclick="showButton('sleep')">Sleep</button>
+                            <button onclick="showButton('read')">Read</button>
+                            <button onclick="showButton('another')">Another</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--end-->
+
     </div>
 </body>
 <script>
+    //for control webpage by wanna automatic or manual 
+    const switchInput = document.getElementById('toggleSwitch');
+    const content1 = document.getElementById('content1');
+    const content2 = document.getElementById('content2');
+    const content3 = document.getElementById('content3');
+
+    switchInput.addEventListener('change', function() {
+        if (this.checked) {
+            content1.style.display = 'block';
+            content2.style.display = 'none';
+            content3.style.display = 'none';
+        } else {
+            content1.style.display = 'none';
+            content2.style.display = 'block';
+            content3.style.display = 'block';
+        }
+    });
+
+    function showButton(buttonName) {
+        alert(`Button Clicked: ${buttonName}`);
+    }
+
+    //for show stream as receive from ESP32-CAM via websocket Node.JS
     const img = document.querySelector('img');
-    const WS_URL = 'ws:///192.168.34.157:8888';
+    const boxs = document.getElementById('boxs');
+    const WS_URL = 'ws:///192.168.155.157:8888';
     const ws = new WebSocket(WS_URL);
     let urlObject;
     ws.onopen = () => console.log(`Connected to ${WS_URL}`);
@@ -148,6 +216,11 @@
         }
         urlObject = URL.createObjectURL(new Blob([arrayBuffer]));
         img.src = urlObject;
+        const data = JSON.parse(message.data);
+
+        // Update count_person and color based on detection result
+        document.getElementById('count_person').innerText = data.count_person;
+        boxs.style.backgroundColor = data.color;
     }
 </script>
 </html>
