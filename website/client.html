@@ -47,7 +47,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #7ED957;
+            background-color: #e74350;
             -webkit-transition: .4s;
             transition: .4s;
         }   
@@ -65,7 +65,7 @@
         }
 
         input:checked + .slider {
-            background-color: #9d9393;
+            background-color: #7ED957;
         }
     
         input:focus + .slider {
@@ -103,6 +103,7 @@
         }
         .text{
             color: black;
+            text-align:center
         }
     </style>
 </head>
@@ -153,7 +154,7 @@
             <div class="row">
                 <div id="content2" style="display: none;" class="col-sm">
                     <div class="card" style="width: 18rem;">
-                        <img class="card-img-top" src="lamp2.jpg" alt="Card image cap">
+                        <img class="card-img-top" src="/images/lamp2.jpg" alt="Card image cap">
                         <div class="card-body">
                             <h5 class="card-title text">LAMP 1</h5>
                             <button onclick="showButton('sleep')">Sleep</button>
@@ -164,7 +165,7 @@
                 </div>
                 <div id="content3" style="display: none;" class="col-sm">
                     <div class="card" style="width: 18rem;">
-                        <img class="card-img-top" src="lamp2.jpg" alt="Card image cap">
+                        <img class="card-img-top" src="/images/lamp2.jpg" alt="Card image cap">
                         <div class="card-body">
                             <h5 class="card-title text">LAMP 2</h5>
                             <button onclick="showButton('sleep')">Sleep</button>
@@ -205,7 +206,7 @@
     //for show stream as receive from ESP32-CAM via websocket Node.JS
     const img = document.querySelector('img');
     const boxs = document.getElementById('boxs');
-    const WS_URL = 'ws:///192.168.155.157:8888';
+    const WS_URL = 'ws:///10.13.8.73:8888';
     const ws = new WebSocket(WS_URL);
     let urlObject;
     ws.onopen = () => console.log(`Connected to ${WS_URL}`);
