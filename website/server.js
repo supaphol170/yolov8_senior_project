@@ -2,8 +2,10 @@ const path = require('path');
 const express = require('express');
 const WebSocket = require('ws');
 const app = express();
+const bodyParser = require('body-parser');
 //const { spawnSync } = require('child_process');
 
+app.use(bodyParser.json());
 // Function to serve all static files
 // inside public directory.
 app.use(express.static(__dirname+'/public'));
@@ -19,10 +21,10 @@ let connectedClients = [];
 //esp32-cam
 wsServer.on('connection', (ws, req)=>{
     connectedClients.push(ws);
-    console.log('ESP32-CAM can Connected');
     ws.on('message', data => {
         connectedClients.forEach((ws,i)=>{
             if(ws.readyState === ws.OPEN){
+                console.log('ESP32-CAM can Connected');
                 ws.send(data);
             }else{
                 connectedClients.splice(i ,1);
@@ -36,7 +38,15 @@ esp32.on('connection', (ws) => {
 
     // Send a message to the ESP32 when it connects
     ws.send('Hello ESP32!');
-
+    // Endpoint to receive data from HTML file
+    app.post('/showButton', (req, res) => {
+        const dataFromHTML = req.body;
+        console.log('Data received from HTML:', dataFromHTML);
+        // Forward the data to ESP32 via WebSocket
+        if (ws.readyState === ws.OPEN) {
+            ws.send(JSON.stringify(dataFromHTML));
+        }
+    });
     // Listen for messages from the client
     ws.on('message', (message) => {
         console.log(`Received message from client: ${message}`);
