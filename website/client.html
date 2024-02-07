@@ -157,9 +157,9 @@
                         <img class="card-img-top" src="/images/lamp2.jpg" alt="Card image cap">
                         <div class="card-body">
                             <h5 class="card-title text">LAMP 1</h5>
-                            <button onclick="showButton('sleep')">Sleep</button>
-                            <button onclick="showButton('read')">Read</button>
-                            <button onclick="showButton('another')">Another</button>
+                            <button onclick="showButton('sleep_left')">Sleep</button>
+                            <button onclick="showButton('read_left')">Read</button>
+                            <button onclick="showButton('another_left')">Another</button>
                         </div>
                     </div>
                 </div>
@@ -168,9 +168,9 @@
                         <img class="card-img-top" src="/images/lamp2.jpg" alt="Card image cap">
                         <div class="card-body">
                             <h5 class="card-title text">LAMP 2</h5>
-                            <button onclick="showButton('sleep')">Sleep</button>
-                            <button onclick="showButton('read')">Read</button>
-                            <button onclick="showButton('another')">Another</button>
+                            <button onclick="showButton('sleep_right')">Sleep</button>
+                            <button onclick="showButton('read_right')">Read</button>
+                            <button onclick="showButton('another_right')">Another</button>
                         </div>
                     </div>
                 </div>
@@ -201,12 +201,19 @@
 
     function showButton(buttonName) {
         alert(`Button Clicked: ${buttonName}`);
+        fetch('/showButton', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ data: buttonName })
+        })
     }
 
     //for show stream as receive from ESP32-CAM via websocket Node.JS
     const img = document.querySelector('img');
     const boxs = document.getElementById('boxs');
-    const WS_URL = 'ws:///10.13.8.73:8888';
+    const WS_URL = 'ws:///192.168.80.157:8888';
     const ws = new WebSocket(WS_URL);
     let urlObject;
     ws.onopen = () => console.log(`Connected to ${WS_URL}`);
