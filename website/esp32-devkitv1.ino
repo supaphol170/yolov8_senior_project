@@ -1,9 +1,9 @@
 #include <WiFi.h>
 #include <WebSocketsClient.h>
 
-const char* ssid = "realme 6 pro";
-const char* password = "babe1234";
-const char* server = "192.168.80.157";
+const char* ssid = "Evefy@0@";
+const char* password = "63070111";
+const char* server = "192.168.34.157";
 const int port = 8887;
 
 WebSocketsClient webSocket;
