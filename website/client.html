@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <title>Video Stream</title>
     <style>
@@ -105,6 +105,64 @@
             color: black;
             text-align:center
         }
+        /* Icon 1 */
+        .animated-icon1, .animated-icon2, .animated-icon3 {
+        width: 30px;
+        height: 20px;
+        position: relative;
+        margin: 0px;
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+        -webkit-transition: .5s ease-in-out;
+        -moz-transition: .5s ease-in-out;
+        -o-transition: .5s ease-in-out;
+        transition: .5s ease-in-out;
+        cursor: pointer;
+        }
+
+        .animated-icon1 span, .animated-icon2 span, .animated-icon3 span {
+        display: block;
+        position: absolute;
+        height: 3px;
+        width: 100%;
+        border-radius: 9px;
+        opacity: 1;
+        left: 0;
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+        -webkit-transition: .25s ease-in-out;
+        -moz-transition: .25s ease-in-out;
+        -o-transition: .25s ease-in-out;
+        transition: .25s ease-in-out;
+        }
+
+        .animated-icon1 span {
+        background: #e65100;
+        }
+
+        .animated-icon2 span {
+        background: #e3f2fd;
+        }
+
+        .animated-icon3 span {
+        background: #f3e5f5;
+        }
+
+        .animated-icon1 span:nth-child(1) {
+        top: 0px;
+        }
+
+        .animated-icon1 span:nth-child(2) {
+        top: 10px;
+        }
+
+        .animated-icon1 span:nth-child(3) {
+        top: 20px;
+        }
     </style>
 </head>
 <body class="all">
@@ -125,8 +183,48 @@
                     <input type="checkbox" id="toggleSwitch" checked>
                     <span class="slider round" style="line-height: 50px;"></span>
                 </label>
+                <!-- Button to trigger the modal -->
+                <button type="button" class="navbar-toggler first-button" data-toggle="modal" data-target="#myModal" aria-controls="navbarSupportedContent20" aria-expanded="false" aria-label="Toggle navigation">
+                    <div class="animated-icon1"><span></span><span></span><span></span></div>
+                </button>
+                <!-- Modal -->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title text" id="exampleModalLabel">State Device</h5>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- List group inside modal -->
+                                <div class="list-group">
+                                <a href="#" class="list-group-item list-group-item-action" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">ESP32-CAM + OV2640</a>
+                                <a href="#" class="list-group-item list-group-item-action" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">ESP32-DevkitV1</a>
+                                <!-- Add more items as needed -->
+                                </div>
+                                <!-- Accordion inside modal -->
+                                <div id="accordion" class="mt-3 text">
+                                <div class="collapse" id="collapseOne" aria-labelledby="headingOne" data-parent="#accordion">
+                                    <div class="card card-body">
+                                    Details of ESP32-CAM
+                                    </div>
+                                </div>
+                                <div class="collapse" id="collapseTwo" aria-labelledby="headingTwo" data-parent="#accordion">
+                                    <div class="card card-body">
+                                    Details of ESP32-DevkitV1
+                                    </div>
+                                </div>
+                                <!-- Add more accordions as needed -->
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            </div>
+        <div class="container-fluid">
             <hr style="height: 3px; border: width 0; background-color:white"> <!-- creating line for know seperate between header and content-->
         </div>
 
@@ -153,7 +251,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div id="content2" style="display: none;" class="col-sm">
-                    <div class="card" style="width: 18rem;">
+                    <div class="card d-flex justify-content-center" style="width: 18rem;">
                         <img class="card-img-top" src="/images/lamp2.jpg" alt="Card image cap">
                         <div class="card-body">
                             <h5 class="card-title text">LAMP 1</h5>
@@ -164,7 +262,7 @@
                     </div>
                 </div>
                 <div id="content3" style="display: none;" class="col-sm">
-                    <div class="card" style="width: 18rem;">
+                    <div class="card d-flex justify-content-center" style="width: 18rem;">
                         <img class="card-img-top" src="/images/lamp2.jpg" alt="Card image cap">
                         <div class="card-body">
                             <h5 class="card-title text">LAMP 2</h5>
@@ -181,6 +279,22 @@
     </div>
 </body>
 <script>
+    //hamburger bar
+    $(document).ready(function () {
+
+        $('.first-button').on('click', function () {
+
+            $('.animated-icon1').toggleClass('open');
+        });
+        $('.second-button').on('click', function () {
+
+            $('.animated-icon2').toggleClass('open');
+        });
+        $('.third-button').on('click', function () {
+
+            $('.animated-icon3').toggleClass('open');
+        });
+    });
     //for control webpage by wanna automatic or manual 
     const switchInput = document.getElementById('toggleSwitch');
     const content1 = document.getElementById('content1');
@@ -198,7 +312,7 @@
             content3.style.display = 'block';
         }
     });
-
+    // for send data to Node.JS and show alert on web u want to do this
     function showButton(buttonName) {
         alert(`Button Clicked: ${buttonName}`);
         fetch('/showButton', {
@@ -213,7 +327,7 @@
     //for show stream as receive from ESP32-CAM via websocket Node.JS
     const img = document.querySelector('img');
     const boxs = document.getElementById('boxs');
-    const WS_URL = 'ws:///192.168.80.157:8888';
+    const WS_URL = 'ws:///192.168.1.104:8888';
     const ws = new WebSocket(WS_URL);
     let urlObject;
     ws.onopen = () => console.log(`Connected to ${WS_URL}`);
