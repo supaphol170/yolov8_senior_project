@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
     <title>Video Stream</title>
     <style>
         .all{
@@ -193,7 +195,6 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title text" id="exampleModalLabel">State Device</h5>
-                                </button>
                             </div>
                             <div class="modal-body">
                                 <!-- List group inside modal -->
@@ -206,13 +207,15 @@
                                 <div id="accordion" class="mt-3 text">
                                 <div class="collapse" id="collapseOne" aria-labelledby="headingOne" data-parent="#accordion">
                                     <div class="card card-body">
-                                    Details of ESP32-CAM
+                                        <h5>Data from ESP32-CAM + OV2640: <b id="esp32-cam"></b></h5>
+                                        <h5>Last update status from ESP32-CAM + OV2640: <b id="time"><%= values %></b></h5>
+                                        <div id="dynamicContent"></div>
                                     </div>
                                 </div>
                                 <div class="collapse" id="collapseTwo" aria-labelledby="headingTwo" data-parent="#accordion">
                                     <div class="card card-body" id="changedata">
-                                        <h5>Data from ESP32: <%= dataFromESP32 %></h5>
-                                        <h5>Last update status from ESP32-DevkitV1: <%= value%></h5>
+                                        <h5>Data from ESP32: <b id="esp32"><%= dataFromESP32 %></b></h5>
+                                        <h5>Last update status from ESP32-DevkitV1: <b id="time-esp32-cam"><%= values %></b></h5>
                                         <div id="dynamicContent"></div>
                                     </div>
                                 </div>
@@ -259,6 +262,7 @@
                             <button onclick="showButton('sleep_left')">Sleep</button>
                             <button onclick="showButton('read_left')">Read</button>
                             <button onclick="showButton('another_left')">Another</button>
+                            <button onclick="showButton('close_left')">close</button>
                         </div>
                     </div>
                 </div>
@@ -270,6 +274,7 @@
                             <button onclick="showButton('sleep_right')">Sleep</button>
                             <button onclick="showButton('read_right')">Read</button>
                             <button onclick="showButton('another_right')">Another</button>
+                            <button onclick="showButton('close_right')">close</button>
                         </div>
                     </div>
                 </div>
@@ -324,14 +329,41 @@
             body: JSON.stringify({ data: buttonName })
         })
     }
-    // for change data in html for fetch state between node.js and esp32-evkitv1
-    const changedata = document.getElementById('changedata');
-    changedata.innerText = event.data;
-
+    //for check state esd device
+    function updateTime() {
+        const now = new Date();
+        const currentDateTime = now.toLocaleString();
+        document.getElementById('time').innerText = currentDateTime;
+        document.getElementById('time-esp32-cam').innerText = currentDateTime;
+        fetch('/refreshtime', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ datetime : currentDateTime })
+        })
+        .then(response => {
+            if (!response.ok) {
+                document.getElementById('esp32').innerText = "ESP32-DevkitV1 Not Connect Now";
+            }
+        })
+        .then(data => {
+            // Handle the successful response
+            console.log('Success:', data);
+        })
+        .catch(error => {
+            // Handle errors, log the error message to the console
+            console.error('Error:', error.message);
+        });
+    }
+    // Initial update
+    updateTime();
+    // SetInterval to update the time every 10 seconds
+    setInterval(updateTime, 10000); // 10 seconds interval (in milliseconds)
     //for show stream as receive from ESP32-CAM via websocket Node.JS
     const img = document.querySelector('img');
     const boxs = document.getElementById('boxs');
-    const WS_URL = 'ws:///192.168.136.157:8888';
+    const WS_URL = 'ws:///192.168.1.104:8888';
     const ws = new WebSocket(WS_URL);
     let urlObject;
     ws.onopen = () => console.log(`Connected to ${WS_URL}`);
@@ -341,12 +373,12 @@
             URL.revokeObjectURL(urlObject);
         }
         urlObject = URL.createObjectURL(new Blob([arrayBuffer]));
-        img.src = urlObject;
-        const data = JSON.parse(message.data);
-
+        img.src = urlObject; //show oputput on web
+        //const data = JSON.parse(message.data);
+        
         // Update count_person and color based on detection result
-        document.getElementById('count_person').innerText = data.count_person;
-        boxs.style.backgroundColor = data.color;
+        //document.getElementById('count_person').innerText = data.count_person;
+        //boxs.style.backgroundColor = data.color;
     }
 </script>
 </html>
