@@ -4,19 +4,15 @@
 
 const char* ssid = "supaphol";
 const char* password = "63070170";
-const char* server = "10.50.5.15";
+const char* server = "192.168.31.157";
 const int port = 8887;
-const int relay_IN1 = 26;
-const int relay_IN2 = 32;
-String previous_message_left;
-String current_message_left;
-String previous_message_right;
-String current_message_right;
-int index_of_previous_message_left;
-int index_of_current_message_left;
-int index_of_previous_message_right;
-int index_of_current_message_right;
-const char* message_list[] = {"sleep_left", "read_left", "another_left", "close_left"};//for base check between current and previous variable for know how many count close and open lamp.
+const int relay_IN1 = 32;
+const int relay_IN2 = 33;
+String previous_message;
+String current_message;
+int index_of_previous_message;
+int index_of_current_message;
+const char* message_list[] = {"read", "another", "sleep", "close"};//for base check between current and previous variable for know how many count close and open lamp.
 const int message_list_size = sizeof(message_list) / sizeof(message_list[0]);
 
 WebSocketsClient webSocket;
@@ -39,8 +35,8 @@ void setup() {
     digitalWrite(relay_IN1, HIGH);
     digitalWrite(relay_IN2, HIGH);
     // Set the initial state of lamp for default.
-    previous_message_left = "read_left";
-    previous_message_right = "read_right";
+    previous_message = "read";
+    previous_message = "read";
     // Connect to Wi-Fi
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
@@ -85,51 +81,54 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
             // Extract data from the JSON document
             String dataValue = doc["data"].as<String>();// for compare value
             const char* value = doc["data"]; //for show output
+            char *token = strtok((char *)dataValue.c_str(), "_");
+            String first_token = token; //value before "_"
+            token = strtok(NULL, "_"); //value after "_"
             //lamp1
             //check this value are same previous or not if it's same don't do anyting/
-            if (dataValue == previous_message_left){
+            if (dataValue == previous_message){
               // If the received message is the same as the previous one
               Serial.println("Received message is the same as the previous one, no action required");
             }
             //If it's not same have to change
             else{
-              current_message_left = dataValue;
-              index_of_previous_message_left = findIndex(previous_message_left);
-              index_of_current_message_left = findIndex(current_message_left);
-              Serial.print("Index of previous_message_left before compare : ");
-              Serial.println(index_of_previous_message_left);
-              Serial.print("Index of current_message_left before compare : ");
-              Serial.println(index_of_current_message_left);
-              if (index_of_previous_message_left == index_of_current_message_left){
+              current_message = dataValue;
+              index_of_previous_message = findIndex(previous_message);
+              index_of_current_message = findIndex(current_message);
+              Serial.print("Index of previous_message before compare : ");
+              Serial.println(index_of_previous_message);
+              Serial.print("Index of current_message before compare : ");
+              Serial.println(index_of_current_message);
+              if (index_of_previous_message == index_of_current_message){
                 Serial.println("previous message are same curreent message so noting to change lamp");
               }
-              else if (index_of_previous_message_left > index_of_current_message_left){
-                for (int i = 0; i < (index_of_current_message_left-index_of_previous_message_left); i++) {
+              else if (index_of_previous_message > index_of_current_message){
+                for (int i = 0; i < (index_of_current_message-index_of_previous_message); i++) {
                   delay(50);
                   digitalWrite(relay_IN1, HIGH);//close lamp i
                   delay(50);
                   digitalWrite(relay_IN1, LOW);//open lamp i
                 }
-                previous_message_left = current_message_left;
-                current_message_left = "";
-                Serial.print("Index of previous_message_left : ");
-                Serial.println(previous_message_left);
-                Serial.print("Index of current_message_left : ");
-                Serial.println(current_message_left);
+                previous_message = current_message;
+                current_message = "";
+                Serial.print("Index of previous_message : ");
+                Serial.println(previous_message);
+                Serial.print("Index of current_message : ");
+                Serial.println(current_message);
               }
-              else if (index_of_previous_message_left < index_of_current_message_left){
-                for (int i = 0; i < (index_of_previous_message_left-index_of_current_message_left); i++) {
+              else if (index_of_previous_message < index_of_current_message){
+                for (int i = 0; i < (index_of_previous_message-index_of_current_message); i++) {
                   delay(50);
                   digitalWrite(relay_IN1, HIGH);//close lamp i
                   delay(50);
                   digitalWrite(relay_IN1, LOW);//open lamp i
                 }
-                previous_message_left = current_message_left;
-                current_message_left = "";
-                Serial.print("Index of previous_message_left : ");
-                Serial.println(previous_message_left);
-                Serial.print("Index of current_message_left : ");
-                Serial.println(current_message_left);
+                previous_message = current_message;
+                current_message = "";
+                Serial.print("Index of previous_message : ");
+                Serial.println(previous_message);
+                Serial.print("Index of current_message : ");
+                Serial.println(current_message);
               }
             }
           break;
