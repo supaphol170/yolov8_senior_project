@@ -2,9 +2,9 @@
 #include <WebSocketsClient.h>
 #include <ArduinoJson.h>
 
-const char* ssid = "supaphol";
+const char* ssid = "Supaphol";
 const char* password = "63070170";
-const char* server = "192.168.31.157";
+const char* server = "192.168.78.157";
 const int port = 8887;
 const int relay_IN1 = 26;
 const int relay_IN2 = 27;
@@ -39,8 +39,10 @@ void setup() {
   pinMode(relay_IN2, OUTPUT);
   digitalWrite(relay_IN1, HIGH);
   digitalWrite(relay_IN2, HIGH);
-  previous_message1 = "read"; // Set initial value
-  previous_message2 = "read"; // Set initial value
+  previous_message1 = "close"; // Set initial value
+  previous_message2 = "close"; // Set initial value
+  current_message1 = "close"; // Set initial value
+  current_message2 = "close"; // Set initial value
   // Connect to Wi-Fi
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -51,6 +53,24 @@ void setup() {
   // Connect to WebSocket server
   webSocket.begin(server, port, "/");
   webSocket.onEvent(webSocketEvent);
+  // for show first state before do action  
+  index_of_previous_message1 = findIndex(previous_message1);
+  index_of_current_message1 = findIndex(current_message1);
+  Serial.println("---------------------START---------------------");
+  Serial.print("Index of previous_message1 before compare : ");
+  Serial.println(index_of_previous_message1);
+  Serial.print("Index of current_message1 before compare : ");
+  Serial.println(index_of_current_message1);
+  Serial.println(".............................");
+  // for show first state before do action  
+  index_of_previous_message2 = findIndex(previous_message2);
+  index_of_current_message2 = findIndex(current_message2);
+  Serial.println("---------------------START---------------------");
+  Serial.print("Index of previous_message2 before compare : ");
+  Serial.println(index_of_previous_message2);
+  Serial.print("Index of current_message2 before compare : ");
+  Serial.println(index_of_current_message2);
+  Serial.println(".............................");
 }
 
 void loop() {
@@ -69,28 +89,50 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
             break;
         case WStype_TEXT:
             Serial.printf("Received message: %s\n", payload);
-            webSocket.sendTXT(payload);
             DynamicJsonDocument doc(256);
-            DeserializationError error = deserializeJson(doc, payload, length);
+            DeserializationError error = deserializeJson(doc, payload, length);// for check error json.
             if (error) {
                 Serial.print("Failed to parse JSON: ");
                 Serial.println(error.c_str());
+                webSocket.sendTXT(payload);
                 return;
             }
             String dataValue = doc["data"].as<String>();
             const char* value = doc["data"];
             char *token = strtok((char *)dataValue.c_str(), "_");
-            String action = token;
+            String action = token; //before "_"
             token = strtok(NULL, "_");
-            String lamp = token;
-            if (lamp == "left") {
-                // Handle message for lamp1
-                handleLampMessage(relay_IN1, action, previous_message1, current_message1, index_of_previous_message1, index_of_current_message1);
-            } else if (lamp == "right") {
-                // Handle message for lamp2
-                handleLampMessage(relay_IN2, action, previous_message2, current_message2, index_of_previous_message2, index_of_current_message2);
+            String lamp = token; //after "_"
+            Serial.println(lamp);
+            // Check if tokenization was successful
+            if (!lamp.isEmpty()) {
+                // Tokenization successful
+                if (lamp == "left") {
+                  // Handle message for lamp1
+                  webSocket.sendTXT(payload);
+                  handleLampMessage(relay_IN1, action, previous_message1, current_message1, index_of_previous_message1, index_of_current_message1);
+              } else if (lamp == "right") {
+                  // Handle message for lamp2
+                  webSocket.sendTXT(payload);
+                  handleLampMessage(relay_IN2, action, previous_message2, current_message2, index_of_previous_message2, index_of_current_message2);
+              } else {
+                  webSocket.sendTXT(payload);
+                  Serial.println("Invalid lamp identifier");
+              }
             } else {
-                Serial.println("Invalid lamp identifier");
+                // Tokenization failed
+                if (dataValue == "Hello ESP32!"){
+                  webSocket.sendTXT(payload);
+                }
+                else if (dataValue == "reconnect"){
+                  webSocket.sendTXT("ESP32-DevkitV1 are connected now!!");
+                }
+                else {
+                  //for when from auto it's open both of lamp.
+                  webSocket.sendTXT(payload);
+                  handleLampMessage(relay_IN1, dataValue, previous_message1, current_message1, index_of_previous_message1, index_of_current_message1);
+                  handleLampMessage(relay_IN2, dataValue, previous_message2, current_message2, index_of_previous_message2, index_of_current_message2);
+                }
             }
             break;
     }
@@ -115,24 +157,24 @@ void handleLampMessage(int relayPin, String action, String &previous_message, St
   if (index_of_previous_message == index_of_current_message) {
       Serial.println("Previous message is the same as the current message, no action required");
   } else if (index_of_previous_message < index_of_current_message) {
-      for (int i = index_of_previous_message + 1; i <= index_of_current_message; i++) {
+      for (int i = index_of_previous_message; i <= index_of_current_message-index_of_previous_message; i++) {
           digitalWrite(relayPin, HIGH); // Close lamp i
-          delay(1000);
+          delay(30);
           digitalWrite(relayPin, LOW); // Open lamp i
-          delay(1000);
+          delay(30);
       }
       previous_message = current_message;
   } else if (index_of_previous_message > index_of_current_message) {
       // Calculate the number of states to cycle through
-      int states_to_cycle = message_list_size - index_of_previous_message + index_of_current_message;
+      int states_to_cycle = index_of_previous_message - index_of_current_message;
       // Turn off and on the lamp for each state transition
-      for (int i = 0; i < states_to_cycle; i++) {
+      for (int i = 0; i < ((message_list_size-1)-states_to_cycle); i++) {
           // Turn off the lamp
           digitalWrite(relayPin, HIGH);
-          delay(1000);
+          delay(30);
           // Turn on the lamp
           digitalWrite(relayPin, LOW);
-          delay(1000);
+          delay(30);
       }
       previous_message = current_message;
   } else {
