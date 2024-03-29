@@ -3,12 +3,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/favicon.ico" type="image/x-icon" rel="icon" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    
+    <script src="https://cdn.socket.io/4.1.1/socket.io.min.js"></script>
+
     <title>Video Stream</title>
     <style>
         .all{
@@ -208,14 +210,14 @@
                                 <div class="collapse" id="collapseOne" aria-labelledby="headingOne" data-parent="#accordion">
                                     <div class="card card-body">
                                         <h5>Data from ESP32-CAM + OV2640: <b id="esp32-cam"></b></h5>
-                                        <h5>Last update status from ESP32-CAM + OV2640: <b id="time"><%= values %></b></h5>
+                                        <h5>Last update status from ESP32-CAM + OV2640: <b id="time"></b></h5>
                                         <div id="dynamicContent"></div>
                                     </div>
                                 </div>
                                 <div class="collapse" id="collapseTwo" aria-labelledby="headingTwo" data-parent="#accordion">
                                     <div class="card card-body" id="changedata">
-                                        <h5>Data from ESP32: <b id="esp32"><%= dataFromESP32 %></b></h5>
-                                        <h5>Last update status from ESP32-DevkitV1: <b id="time-esp32-cam"><%= values %></b></h5>
+                                        <h5>Data from ESP32: <b id="esp32"></b></h5>
+                                        <h5>Last update status from ESP32-DevkitV1: <b id="time-esp32-cam"></b></h5>
                                         <div id="dynamicContent"></div>
                                     </div>
                                 </div>
@@ -238,10 +240,11 @@
                 <!--for show streaming video by Node.JS change content-->
                 <div class="col-sm">
                     <section>
-                        <img src="">
+                        <!-- Update the URLs in your HTML file -->
+                        <img id="videoFeed" alt="Video Feed">
                     </section>
                     <h3 class="center">Real-Time Detection</h3>
-                    <h1 id="count_person" class="center">{{count_person}}</h1> <!--show many people as detected-->
+                    <h1 id="count_person" class="outcome"></h1> <!--show many people as detected-->
                 </div>
                 <div class="col-sm">
                     <div id="boxs" style="--color: {{ color }}"></div><!--example for show when detect it's change color-->
@@ -259,10 +262,10 @@
                         <img class="card-img-top" src="/images/lamp2.jpg" alt="Card image cap">
                         <div class="card-body">
                             <h5 class="card-title text">LAMP 1</h5>
-                            <button onclick="showButton('sleep_left')">Sleep</button>
-                            <button onclick="showButton('read_left')">Read</button>
-                            <button onclick="showButton('another_left')">Another</button>
-                            <button onclick="showButton('close_left')">close</button>
+                            <button onclick="handleButtonClick('sleep_left')">Sleep</button>
+                            <button onclick="handleButtonClick('read_left')">Read</button>
+                            <button onclick="handleButtonClick('another_left')">Another</button>
+                            <button onclick="handleButtonClick('close_left')">close</button>
                         </div>
                     </div>
                 </div>
@@ -271,10 +274,10 @@
                         <img class="card-img-top" src="/images/lamp2.jpg" alt="Card image cap">
                         <div class="card-body">
                             <h5 class="card-title text">LAMP 2</h5>
-                            <button onclick="showButton('sleep_right')">Sleep</button>
-                            <button onclick="showButton('read_right')">Read</button>
-                            <button onclick="showButton('another_right')">Another</button>
-                            <button onclick="showButton('close_right')">close</button>
+                            <button onclick="handleButtonClick('sleep_right')">Sleep</button>
+                            <button onclick="handleButtonClick('read_right')">Read</button>
+                            <button onclick="handleButtonClick('another_right')">Another</button>
+                            <button onclick="handleButtonClick('close_right')">close</button>
                         </div>
                     </div>
                 </div>
@@ -309,76 +312,94 @@
 
     switchInput.addEventListener('change', function() {
         if (this.checked) {
-            content1.style.display = 'block';
+            content1.style.display = 'block'; //auto
             content2.style.display = 'none';
             content3.style.display = 'none';
+            fetch('/state_to_order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ mode: "auto" })
+            })
+            .then(response => {
+                // Handle the response if needed
+                console.log('Value sent successfully');
+            })
+            .catch(error => {
+                // Handle errors
+                console.error('Error sending value:', error);
+            });
         } else {
-            content1.style.display = 'none';
+            content1.style.display = 'none'; //manual
             content2.style.display = 'block';
             content3.style.display = 'block';
+            fetch('/state_to_order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ mode: "manual" })
+            })
+            .then(response => {
+                // Handle the response if needed
+                console.log('Value sent successfully');
+            })
+            .catch(error => {
+                // Handle errors
+                console.error('Error sending value:', error);
+            });
         }
     });
-    // for send data to Node.JS and show alert on web u want to do this
-    function showButton(buttonName) {
-        alert(`Button Clicked: ${buttonName}`);
+    function handleButtonClick(value) {
+        // Send the value back to the server using an AJAX request
         fetch('/showButton', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ data: buttonName })
+            body: JSON.stringify({ data: value })
         })
+        .then(response => {
+            // Handle the response if needed
+            console.log('Value sent successfully');
+        })
+        .catch(error => {
+            // Handle errors
+            console.error('Error sending value:', error);
+        });
     }
     //for check state esd device
     function updateTime() {
         const now = new Date();
         const currentDateTime = now.toLocaleString();
-        document.getElementById('time').innerText = currentDateTime;
-        document.getElementById('time-esp32-cam').innerText = currentDateTime;
-        fetch('/refreshtime', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ datetime : currentDateTime })
-        })
-        .then(response => {
-            if (!response.ok) {
-                document.getElementById('esp32').innerText = "ESP32-DevkitV1 Not Connect Now";
-            }
-        })
-        .then(data => {
-            // Handle the successful response
-            console.log('Success:', data);
-        })
-        .catch(error => {
-            // Handle errors, log the error message to the console
-            console.error('Error:', error.message);
-        });
+        document.getElementById('time').innerText = currentDateTime; //show time now of esp32-cam
+        document.getElementById('time-esp32-cam').innerText = currentDateTime; //show time now for esp32-devkitv1
     }
     // Initial update
     updateTime();
     // SetInterval to update the time every 10 seconds
     setInterval(updateTime, 10000); // 10 seconds interval (in milliseconds)
-    //for show stream as receive from ESP32-CAM via websocket Node.JS
-    const img = document.querySelector('img');
-    const boxs = document.getElementById('boxs');
-    const WS_URL = 'ws:///192.168.1.104:8888';
-    const ws = new WebSocket(WS_URL);
-    let urlObject;
-    ws.onopen = () => console.log(`Connected to ${WS_URL}`);
-    ws.onmessage = message => {
-        const arrayBuffer = message.data;
-        if(urlObject){
-            URL.revokeObjectURL(urlObject);
+    //camera
+    async function getColor() {
+        try {
+            const response = await fetch('http://localhost:5000/get_color');
+            const data = await response.json();
+            console.log(data.class_name_human)
+            if (data.class_name_human) {
+                document.getElementById('count_person').innerText = data.class_name_human;
+            }
+            else {
+                document.getElementById('count_person').innerText = "Can't Detect";
+            }
+            // Update your UI based on the response
+            //console.log(data);
+        } catch (error) {
+            console.error(error.message);
         }
-        urlObject = URL.createObjectURL(new Blob([arrayBuffer]));
-        img.src = urlObject; //show oputput on web
-        //const data = JSON.parse(message.data);
-        
-        // Update count_person and color based on detection result
-        //document.getElementById('count_person').innerText = data.count_person;
-        //boxs.style.backgroundColor = data.color;
     }
+    setInterval(getColor, 10); // Call the getColor function every second
+    const video = document.getElementById('videoFeed');
+    video.src = 'http://127.0.0.1:5001/video_feed';
 </script>
 </html>
