@@ -3,7 +3,7 @@ Train model for detect obj receives from sensor is human or not for control turn
 Install & Set Up Environment : 
   - Download python for install from Official website : https://www.python.org/downloads/ 
   - Download anaconda miniconda3 from this link https://www.anaconda.com/download
-  - Create virtual environment(venv) using miniconda3 by this command : ``` conda create -n --name env_name python=3.7 (--name is depend on name what you want) ```
+  - Create virtual environment(venv) using miniconda3 by this command : ``` conda create -n --name env_name python=3.7 (env_name is depend on name what you want) ```
   - Activate venv from this command : ``` conda activate --name ```
   - Install yolov8 but yolov8 is from Ultralytics so you have to using this command for install : ``` pip install ultralytics ```
   - Create SubFolder like this :
