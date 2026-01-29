@@ -1,6 +1,5 @@
 # yolov8_senior_project
-Train model for detect obj receives from sensor is human or not for control turn on/off lights
-Install & Set Up Environment : 
+Smart Lighting Control System using Computer Vision (YOLOv8) to detect human presence and automate light switching : 
   - Download python for install from Official website : https://www.python.org/downloads/ 
   - Download anaconda miniconda3 from this link https://www.anaconda.com/download
   - Create virtual environment(venv) using miniconda3 by this command : ``` conda create -n --name env_name python=3.7 (env_name is depend on name what you want) ```
